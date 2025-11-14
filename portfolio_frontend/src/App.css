@@ -1,25 +1,53 @@
 /* CSS Variables for Theme Management per style guide (#3b82f6 & #06b6d4 accents) */
 :root {
+  /* Core colors */
   --primary: #3b82f6;
   --secondary: #64748b;
   --success: #06b6d4;
   --error: hsl(0 84% 60%);
   --text: #111827;
 
+  /* Surfaces & backgrounds (light) */
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --surface: #ffffff;
   --border-color: #e5e7eb;
 
+  /* Buttons */
   --button-bg: var(--primary);
   --button-text: #ffffff;
 
+  /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
   --shadow-md: 0 4px 10px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-round: 9999px;
+
+  /* Spacing scale (4px baseline) */
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem;  /* 8px */
+  --space-md: 0.75rem; /* 12px */
+  --space-lg: 1rem;    /* 16px */
+  --space-xl: 1.5rem;  /* 24px */
+  --space-2xl: 2rem;   /* 32px */
+  --space-3xl: 3rem;   /* 48px */
+  --space-4xl: 4rem;   /* 64px */
+  --space-6xl: 6rem;   /* 96px */
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(180deg, rgba(59,130,246,0.08), transparent);
+  --gradient-accent: linear-gradient(90deg, rgba(59,130,246,0.15), rgba(6,182,212,0.15));
 
   scroll-behavior: smooth;
 }
 
+/* Dark theme overrides (preserve light/dark consistency) */
 [data-theme="dark"] {
   --bg-primary: #0b0f17;
   --bg-secondary: #0f172a;
@@ -27,6 +55,7 @@
   --text: #e5e7eb;
   --border-color: #1f2937;
 
+  /* Keep primary hue, optionally shift button hue for contrast */
   --button-bg: #2563eb;
   --button-text: #e5e7eb;
 }
@@ -43,7 +72,7 @@
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 var(--space-lg);
 }
 
 /* Skip link accessibility */
@@ -53,12 +82,12 @@
   top: 0;
   background: var(--primary);
   color: #fff;
-  padding: 0.5rem 1rem;
+  padding: var(--space-sm) var(--space-lg);
   z-index: 10000;
 }
 .skip-link:focus {
-  left: 1rem;
-  top: 1rem;
+  left: var(--space-lg);
+  top: var(--space-lg);
   outline: 3px solid var(--success);
 }
 
@@ -88,7 +117,7 @@
 .nav-links {
   list-style: none;
   display: flex;
-  gap: 1rem;
+  gap: var(--space-lg);
   margin: 0;
   padding: 0;
 }
@@ -106,21 +135,22 @@
   background: var(--surface);
   color: var(--text);
   padding: 0.4rem 0.7rem;
+  border-radius: var(--radius-md);
 }
 
 /* Hero */
 .hero {
-  background: linear-gradient(180deg, rgba(59,130,246,0.08), transparent);
-  padding: 6rem 0 4rem;
+  background: var(--gradient-hero);
+  padding: var(--space-6xl) 0 var(--space-4xl);
 }
 .hero-inner {
   display: grid;
-  gap: 1.5rem;
+  gap: var(--space-xl);
 }
 .title {
   font-size: 2.25rem;
   line-height: 1.2;
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-sm);
 }
 .subtitle {
   color: var(--secondary);
@@ -131,23 +161,23 @@
 }
 .hero-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-md);
 }
 
 /* Sections */
 .section {
-  padding: 4rem 0;
+  padding: var(--space-4xl) 0;
   background: var(--bg-primary);
 }
 .section:nth-of-type(even) {
   background: var(--bg-secondary);
 }
 .section-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-xl);
 }
 .section-title {
   font-size: 1.75rem;
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--space-xs);
 }
 .section-description {
   color: var(--secondary);
@@ -157,7 +187,7 @@
 /* Grid & Cards */
 .grid {
   display: grid;
-  gap: 1rem;
+  gap: var(--space-lg);
 }
 @media (min-width: 700px) {
   .grid.cards {
@@ -167,20 +197,20 @@
 .card {
   background: var(--surface);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 .card-body {
-  padding: 1rem;
+  padding: var(--space-lg);
 }
 .card-title {
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--space-xs);
   font-size: 1.125rem;
 }
 .card-text {
   color: var(--secondary);
-  margin: 0 0 0.75rem;
+  margin: 0 0 var(--space-md);
 }
 .card-actions {
   display: flex;
@@ -190,7 +220,7 @@
 /* Skills */
 .skills {
   display: grid;
-  gap: 1rem;
+  gap: var(--space-lg);
 }
 @media (min-width: 700px) {
   .skills {
@@ -200,16 +230,16 @@
 .skill-group {
   background: var(--surface);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 1rem;
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
 }
 .skill-title {
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-sm);
 }
 .skill-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-sm);
   list-style: none;
   padding: 0;
   margin: 0;
@@ -217,7 +247,7 @@
 .skill-item {
   border: 1px solid var(--border-color);
   padding: 0.25rem 0.5rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: rgba(59,130,246,0.06);
 }
 
@@ -225,13 +255,13 @@
 .timeline {
   list-style: none;
   margin: 0;
-  padding: 0 0 0 1rem;
+  padding: 0 0 0 var(--space-lg);
   border-left: 2px solid var(--border-color);
 }
 .timeline-item {
   position: relative;
-  padding-left: 1rem;
-  margin-bottom: 1rem;
+  padding-left: var(--space-lg);
+  margin-bottom: var(--space-lg);
 }
 .timeline-marker {
   position: absolute;
@@ -243,22 +273,22 @@
   border-radius: 50%;
 }
 .timeline-title {
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--space-xs);
 }
 .timeline-period {
   color: var(--secondary);
   font-size: 0.9rem;
 }
 .timeline-summary {
-  margin: 0.25rem 0 0;
+  margin: var(--space-xs) 0 0;
 }
 
 /* Forms */
 .form {
   background: var(--surface);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 1rem;
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
 }
 .form-row {
   display: grid;
@@ -273,7 +303,7 @@
   border: 1px solid var(--border-color);
   background: transparent;
   color: var(--text);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 0.6rem 0.7rem;
   outline: none;
 }
@@ -287,7 +317,7 @@
   justify-content: flex-end;
 }
 .form-status {
-  margin-top: 0.75rem;
+  margin-top: var(--space-md);
   color: var(--success);
   font-weight: 600;
 }
@@ -300,7 +330,7 @@
   gap: 0.4rem;
   padding: 0.55rem 0.9rem;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
   text-decoration: none;
