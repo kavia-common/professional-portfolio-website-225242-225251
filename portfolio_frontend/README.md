@@ -26,81 +26,87 @@ Key files and directories:
 
 In the project directory:
 
-### Development server
-- npm start
+### Preview locally (development)
+- Install dependencies if not already installed: npm install
+- Start the dev server: npm start
 - Open http://localhost:3000
 
-Environment variables with REACT_APP_ prefix can be placed in a .env file at the project root and are read at build time by Create React App.
+Changes hot‑reload automatically. If the port is in use, CRA will prompt to use the next available port.
+
+Environment variables with the REACT_APP_ prefix can be placed in a .env file at the project root. They are read at build time by Create React App (CRA).
 
 ### Run tests
 - npm test
 
-The test suite uses React Testing Library and covers:
+The test runner (Jest + React Testing Library) runs in watch mode. Press a to run all tests. Press q to quit.
+
+The suite currently covers:
 - Navigation and section rendering/focus behavior
 - Theme toggle and persistence to localStorage
-- Contact form validation and submission paths (with and without API)
+- Contact form validation and both submission paths (with and without API)
 
-See “Testing” for details on mocking fetch and environment.
+Interpreting results:
+- Failures in navigation tests often indicate aria-label changes or heading changes. Update labels consistently in NavBar or Section if you change text.
+- Failures in theme tests generally mean the data-theme attribute is not set or localStorage key "theme" is not being updated. Verify useTheme hook usage.
+- Failures in contact tests when API flow is expected usually mean process.env.REACT_APP_API_BASE was not set in the test or fetch was not mocked. See src/__tests__/contact.test.js for correct mocking patterns.
 
-### Production build
+See “Testing” below for additional details on mocking fetch and environment.
+
+### Build for production
 - npm run build
 
-Outputs an optimized build to the build/ folder.
+This generates an optimized production bundle in the build/ folder. Serve the build directory with a static file server or deploy to your hosting provider (Netlify, Vercel, GitHub Pages, S3/CloudFront, etc.).
 
 ## Environment Configuration
 
-The application reads configuration from REACT_APP_* variables via src/config/env.js. The getEnv() function normalizes and returns a readonly config object.
+The app reads configuration from REACT_APP_* variables via src/config/env.js. The getEnv() function normalizes and returns a readonly config object.
 
-Supported variables and behavior:
+Full list and defaults:
 - REACT_APP_API_BASE
-  - Purpose: Base URL for the contact API endpoint. If provided, Contact form POSTs JSON to ${REACT_APP_API_BASE}/contact.
-  - Default: "" (empty). In this case, the Contact form gracefully falls back to a mailto flow with explicit guidance to the user.
+  - Used as env.apiBase. If present, Contact POSTs to ${apiBase}/contact.
+  - Default: "" (empty → Contact falls back to mailto guidance).
 - REACT_APP_BACKEND_URL
-  - Purpose: Alternative source for API base if REACT_APP_API_BASE is not set.
+  - Fallback for apiBase when REACT_APP_API_BASE is not provided.
   - Default: "".
 - REACT_APP_FRONTEND_URL
-  - Purpose: Public URL for the frontend (used as a reference value).
+  - Used as env.frontendUrl. If not provided, env.js attempts window.location.origin.
   - Default: window.location.origin (best‑effort).
 - REACT_APP_WS_URL
-  - Purpose: WebSocket base URL if applicable.
-  - Default: If not set, it is derived from apiBase by mapping http(s) → ws(s).
+  - Used as env.wsUrl. If not provided, env.js derives ws(s) from apiBase http(s).
+  - Default: derived from apiBase or "".
 - REACT_APP_NODE_ENV
-  - Purpose: Environment label for the app. Enables some development logs when "development".
-  - Default: NODE_ENV or "development".
+  - Used as env.nodeEnv. Also gates dev‑only debug logs in env.js and useTheme().
+  - Default: process.env.NODE_ENV or "development".
 - REACT_APP_ENABLE_SOURCE_MAPS
-  - Purpose: Toggle source maps.
-  - Values: "true" or "false".
-  - Default: true in non‑production, false in production.
+  - Used as env.enableSourceMaps (boolean).
+  - Default: nodeEnv !== "production".
 - REACT_APP_FEATURE_FLAGS
-  - Purpose: Enable optional features by name.
-  - Format: Either a JSON array string (e.g., ["betaBanner","newNav"]) or a comma‑separated list (e.g., betaBanner,newNav).
-  - Exposed via getEnv().featureFlags and helpers hasFeature(flag) and isExperimentEnabled().
+  - Used as env.featureFlags (string[]). Accepts JSON array or comma‑separated list.
+  - Helpers: hasFeature(flag) checks presence; isExperimentEnabled() is separate (see below).
 - REACT_APP_EXPERIMENTS_ENABLED
-  - Purpose: Global switch for experimental features.
-  - Values: "true" or "false".
+  - Used as env.experimentsEnabled (boolean).
   - Default: false.
 - REACT_APP_LOG_LEVEL
-  - Purpose: Client‑side log level for src/utils/logger.js ("error"|"warn"|"info"|"debug").
+  - Used as env.logLevel for src/utils/logger.js ("error" | "warn" | "info" | "debug").
   - Default: "debug" in development; "info" otherwise.
 - REACT_APP_HEALTHCHECK_PATH
-  - Purpose: Path for health checks if needed by hosting (not used directly by components, exposed via env).
+  - Used as env.healthcheckPath.
   - Default: "/healthz".
 - REACT_APP_PORT
-  - Purpose: Port number reference (useful for containerized hosting metadata).
+  - Used as env.port (number). Useful for container metadata.
   - Default: 3000.
 - REACT_APP_TRUST_PROXY
-  - Purpose: Boolean hint for proxy trust scenarios (exposed via env if needed).
-  - Values: "true" or "false".
+  - Used as env.trustProxy (boolean).
   - Default: false.
 
 How env/config is read:
-- The app imports getEnv() (src/config/env.js), which reads process.env.REACT_APP_* variables at build time and returns a frozen configuration object with:
-  - apiBase, frontendUrl, wsUrl, nodeEnv, enableSourceMaps, featureFlags, experimentsEnabled, logLevel, healthcheckPath, port, trustProxy
-- Helpers:
+- The app imports getEnv() (src/config/env.js), which reads process.env.REACT_APP_* at build time and returns a frozen configuration:
+  - { apiBase, frontendUrl, wsUrl, nodeEnv, enableSourceMaps, featureFlags, experimentsEnabled, logLevel, healthcheckPath, port, trustProxy }
+- Helpers also exported:
   - hasFeature(flag: string): boolean
   - isExperimentEnabled(): boolean
 
-Example .env (do not commit real secrets):
+Example .env (do not commit real secrets to VCS):
 REACT_APP_API_BASE=https://api.example.com
 REACT_APP_FEATURE_FLAGS=betaBanner,newNav
 REACT_APP_EXPERIMENTS_ENABLED=true
@@ -115,18 +121,25 @@ Projects:
   - tags (string[], optional)
   - links (object with optional demo and repo fields)
   - image (string URL, optional)
-- The Projects component loads this JSON dynamically and handles missing optional fields gracefully. If the array is empty, a friendly placeholder message is shown.
+- Save the file and refresh; the Projects section will update automatically. If the array is empty, a friendly placeholder message is shown.
 
 Sections and text:
-- Hero: src/components/Hero.js (update name, subtitle, button labels)
-- Skills: src/components/Skills.js (update skill groups and items)
-- Experience: src/components/Experience.js (update roles array)
-- Contact: src/components/Contact.js (see “Contact form behavior”)
-- Shared Section wrapper: src/components/Section.js
-- Footer: in src/App.js
+- Hero (src/components/Hero.js)
+  - Replace “Your Name”, update the subtitle, and adjust CTA targets if you change section ids.
+- Skills (src/components/Skills.js)
+  - Edit the skills object to reflect your stack and tools.
+- Experience (src/components/Experience.js)
+  - Update the roles array with your company, role, period, and summary.
+- Contact (src/components/Contact.js)
+  - Replace the placeholder publicEmail value before deploying if you rely on mailto fallback.
+  - If you have a backend, set REACT_APP_API_BASE and ensure your API implements POST /contact.
+- Shared wrapper (src/components/Section.js)
+  - Titles are h2 with aria-labelledby and aria-describedby wiring. Keep this structure for accessibility.
+- Footer (in src/App.js)
+  - Update the © notice and taglines.
 
 Navigation labels and order:
-- src/components/NavBar.js controls the nav links and their order.
+- src/components/NavBar.js controls the nav items. If you rename section ids, update href targets and scrollToId() calls accordingly.
 
 ## Theming and Style Guide
 
@@ -160,27 +173,27 @@ Theme toggle:
 Run tests:
 - npm test
 
-What tests cover:
-- src/__tests__/navigation.test.js
-  - Renders nav links, sections, and verifies focus behavior for anchors
-- src/__tests__/theme.test.js
-  - Toggles between light/dark, asserts persistence in localStorage and data-theme updates
-- src/__tests__/contact.test.js
-  - Validates required fields and formats
-  - Mocks fetch for success/failure when REACT_APP_API_BASE is set
-  - Verifies fallback status messaging when no API is configured
+Coverage and scope:
+- The suite emphasizes accessibility behavior (roles, labels, focus), theme toggling, and contact submission logic.
+- Add new tests under src/__tests__/ to cover additional sections or features you introduce.
+
+Interpreting failures:
+- Navigation: Ensure section ids match NavBar links. Headings should remain semantic (Hero h1; other sections h2).
+- Theme: Confirm useTheme is applied at App root, and data-theme is set on documentElement.
+- Contact: When testing API path, set process.env.REACT_APP_API_BASE and provide a global.fetch mock that resolves to { ok: true, json: async () => ({ ok: true }) } or a non-ok shape for error paths.
 
 Mocking fetch and env:
-- Tests set process.env.REACT_APP_API_BASE in each case to exercise API vs. fallback logic.
-- For API path, tests inject global.fetch mock implementations and assert request details and UI updates.
+- Set per-test before render:
+  - process.env.REACT_APP_API_BASE = 'https://api.example.com'
+  - global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ ok: true }) })
+- For fallback behavior tests, clear REACT_APP_API_BASE and do not define global.fetch to exercise the mailto path.
 
 ## Deployment Notes
 
-- Build with npm run build and deploy the build/ folder to your static hosting provider (e.g., Netlify, Vercel, GitHub Pages, S3 + CloudFront).
-- If you need the Contact form to POST to an API, ensure REACT_APP_API_BASE is set at build time to your backend origin. Example:
-  - https://api.example.com
-  - The Contact form will POST to ${REACT_APP_API_BASE}/contact with a JSON body: { name, email, message }
-- For WebSocket‑based features if added later, provide REACT_APP_WS_URL, or ensure REACT_APP_API_BASE is a proper https/http URL so ws/wss can be derived accurately.
+- Build with npm run build and deploy the build/ folder to your static hosting provider (e.g., Netlify, Vercel, GitHub Pages, S3 + CloudFront, Firebase Hosting).
+- Contact API: Set REACT_APP_API_BASE at build time to your backend origin (e.g., https://api.example.com). The Contact form POSTs to ${REACT_APP_API_BASE}/contact with body { name, email, message }.
+- If you do not have a backend yet, keep REACT_APP_API_BASE unset and update the mailto placeholder in Contact.js to your public email.
+- WebSockets (optional): Provide REACT_APP_WS_URL explicitly, or use an http(s) apiBase that can be derived to ws(s) by env.js.
 
 ## Optional Enhancements and Feature Flags
 
@@ -191,7 +204,12 @@ Feature flags (REACT_APP_FEATURE_FLAGS) and experiments (REACT_APP_EXPERIMENTS_E
   - if (hasFeature("betaBanner")) { /* show preview UI */ }
   - if (isExperimentEnabled()) { /* enable experiments */ }
 
-These flags are not required for the current app to function but provide a consistent pattern for enabling future optional UI or experiments.
+Ideas you can gate behind flags:
+- "betaBanner": Display a non‑intrusive banner announcing upcoming features.
+- "altTheme": Try alternative accent colors using CSS var overrides in a small scoped wrapper.
+- "newNav": Prototype a responsive/mobile nav variant.
+
+These flags are optional and purely opt‑in. They help you iterate without disrupting the stable experience.
 
 ## Contact Form Behavior
 
@@ -208,6 +226,7 @@ The Contact component (src/components/Contact.js) validates input and chooses on
 - The form displays a friendly message in a role="status" live region indicating no contact API is configured.
 - An “Email Instead” button is shown with a pre‑filled mailto link. The message includes the provided name, email, and message so users can easily send via their client.
 - The code does not auto‑navigate to mailto; it lets the user choose the email option.
+- Important: Update the publicEmail placeholder in Contact.js to your real public email before deploying.
 
 Security and privacy:
 - The logger utility scrubs sensitive keys and never logs PII values.
