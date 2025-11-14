@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import Section from "./Section";
 import { getEnv } from "../config/env";
+import { getLogger } from "../utils/logger";
 
 /**
  * PUBLIC_INTERFACE
@@ -14,6 +15,7 @@ import { getEnv } from "../config/env";
  */
 export default function Contact() {
   const env = getEnv();
+  const logger = getLogger("Contact");
 
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -39,22 +41,26 @@ export default function Contact() {
       setError("Please enter your name.");
       setStatus("");
       nameRef.current?.focus();
+      logger.debug("validation_failed", { field: "name" });
       return false;
     }
     if (!email || !emailPattern.test(email)) {
       setError("Please enter a valid email address.");
       setStatus("");
       emailRef.current?.focus();
+      logger.debug("validation_failed", { field: "email" });
       return false;
     }
     if (!message || message.length < 10) {
       setError("Please provide a message (at least 10 characters).");
       setStatus("");
       messageRef.current?.focus();
+      logger.debug("validation_failed", { field: "message" });
       return false;
     }
 
     setError("");
+    logger.debug("validation_passed");
     return true;
   };
 
@@ -80,6 +86,7 @@ export default function Contact() {
 
     const apiBase = env.apiBase;
     if (apiBase) {
+      logger.info("submit_started", { path: "/contact", via: "api" });
       // Attempt JSON POST to `${apiBase}/contact`
       try {
         const res = await fetch(`${apiBase}/contact`, {
@@ -107,10 +114,12 @@ export default function Contact() {
         setError("");
         setValues({ name: "", email: "", message: "" });
         nameRef.current?.focus();
+        logger.info("submit_success", { path: "/contact" });
       } catch (_err) {
         // Avoid leaking details; user-facing, friendly message
         setError("We couldn't submit your message right now. Please try again later or use the email option below.");
         setStatus("");
+        logger.warn("submit_failed", { path: "/contact" });
       } finally {
         setSubmitting(false);
       }
@@ -119,6 +128,7 @@ export default function Contact() {
 
     // Fallback: mailto guidance
     try {
+      logger.info("submit_started", { via: "mailto" });
       // Build a safe mailto link; no secrets hardcoded.
       // Replace with your public contact email before deploying.
       const publicEmail = "you@example.com"; // Non-secret, illustrative placeholder
@@ -129,11 +139,13 @@ export default function Contact() {
       // In environments without an API, provide explicit guidance and a mailto action.
       setStatus("No contact API configured. You can send your message via your email client using the button below.");
       setError("");
+      logger.info("fallback_ready", { method: "mailto" });
       // Do not auto-navigate user; instead, render a visible email action.
       // We keep submitting=false so the user can click the email button.
     } catch {
       setError("Unable to prepare email fallback. Please copy your message and email me directly.");
       setStatus("");
+      logger.error("fallback_error");
     } finally {
       setSubmitting(false);
     }
