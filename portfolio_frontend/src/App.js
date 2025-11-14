@@ -1,47 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import { useTheme } from './hooks/useTheme';
+import NavBar from './components/NavBar';
+import Hero from './components/Hero';
+import Projects from './components/Projects';
+import Skills from './components/Skills';
+import Experience from './components/Experience';
+import Contact from './components/Contact';
 
-// PUBLIC_INTERFACE
+/**
+ * PUBLIC_INTERFACE
+ * App - Portfolio single-page application root.
+ * Renders themed layout with smooth-scrolling sections.
+ */
 function App() {
-  const [theme, setTheme] = useState('light');
-
-  // Effect to apply theme to document element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  const { theme, toggleTheme } = useTheme('light');
 
   return (
     <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <a href="#main" className="skip-link">Skip to content</a>
+      <NavBar onToggleTheme={toggleTheme} currentTheme={theme} />
+      <main id="main" className="main">
+        <Hero />
+        <Projects />
+        <Skills />
+        <Experience />
+        <Contact />
+      </main>
+      <footer className="footer" role="contentinfo">
+        <div className="container footer-inner">
+          <span className="muted">© {new Date().getFullYear()} Your Name</span>
+          <span className="muted">Built with React</span>
+        </div>
+      </footer>
     </div>
   );
 }
