@@ -1,26 +1,42 @@
 import React, { useState } from "react";
 import Section from "./Section";
+import { getEnv, hasFeature } from "../config/env";
 
 /**
  * PUBLIC_INTERFACE
  * Contact - basic contact form (placeholder - no backend wired).
  *
  * Note: For integration, use env vars like:
- * - REACT_APP_API_BASE / REACT_APP_BACKEND_URL for API endpoint
+ * - apiBase from centralized config (REACT_APP_API_BASE / REACT_APP_BACKEND_URL)
  * Avoid hardcoding URLs. See .env.example for details.
  */
 export default function Contact() {
   const [status, setStatus] = useState(null);
+  const env = getEnv();
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    // Placeholder submit handler: could POST to `${process.env.REACT_APP_API_BASE}/contact`
+    // Example: feature flag gate a fake submission behavior or advanced spam protection
+    const enableFakePost = hasFeature("fake-contact-post");
+
+    if (enableFakePost && env.apiBase) {
+      try {
+        // This is a placeholder: in real integration, POST the form data to `${env.apiBase}/contact`
+        // await fetch(`${env.apiBase}/contact`, { method: "POST", body: new FormData(e.currentTarget) });
+        setStatus("Thank you! Your message has been noted.");
+      } catch {
+        setStatus("Sorry, we couldn't submit your message. Please try again later.");
+      }
+      return;
+    }
+
+    // Default placeholder behavior
     setStatus("Thank you! Your message has been noted.");
   };
 
   return (
     <Section id="contact" title="Contact" description="Interested in working together? Send a message.">
-      <form className="form" onSubmit={onSubmit} aria-label="Contact form">
+      <form className="form" onSubmit={onSubmit} aria-label="Contact form" noValidate>
         <div className="form-row">
           <label htmlFor="name">Name</label>
           <input id="name" name="name" required placeholder="Your name" />
