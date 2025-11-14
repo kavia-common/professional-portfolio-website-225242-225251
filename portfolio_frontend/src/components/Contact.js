@@ -52,7 +52,7 @@ export default function Contact() {
         <div className="form-actions">
           <button className="btn btn-primary" type="submit" aria-label="Send message">Send</button>
         </div>
-        {status ? <div role="status" className="form-status">{status}</div> : null}
+        {status ? <div role="status" aria-live="polite" className="form-status">{status}</div> : null}
       </form>
     </Section>
   );

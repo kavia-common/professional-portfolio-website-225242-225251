@@ -19,6 +19,22 @@ export function useSmoothScroll(options = {}) {
       const rect = el.getBoundingClientRect();
       const absoluteY = rect.top + window.pageYOffset - offset;
       window.scrollTo({ top: absoluteY, behavior });
+
+      // After a frame, move focus to the target region for accessibility
+      // without causing an extra jump (element already scrolled into view).
+      requestAnimationFrame(() => {
+        try {
+          // Ensure element is focusable temporarily if not naturally focusable
+          const prevTabIndex = el.getAttribute("tabindex");
+          if (prevTabIndex === null) el.setAttribute("tabindex", "-1");
+          el.focus({ preventScroll: true });
+          // Clean up to avoid permanent tabindex on non-interactive sections
+          if (prevTabIndex === null) el.removeAttribute("tabindex");
+        } catch {
+          // ignore focus errors
+        }
+      });
+
       // Update the URL hash without jumping (avoid restricted global 'history')
       window.history.replaceState(null, "", `#${id}`);
     },

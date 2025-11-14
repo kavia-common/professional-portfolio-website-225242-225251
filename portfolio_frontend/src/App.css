@@ -91,6 +91,15 @@
   outline: 3px solid var(--success);
 }
 
+/* Ensure focus-visible styles for main regions and headings */
+main:focus-visible,
+.section:focus-visible,
+.section .section-title:focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--primary) 60%, white);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
 /* Navbar */
 .navbar {
   position: sticky;
