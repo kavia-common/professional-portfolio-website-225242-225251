@@ -13,7 +13,7 @@ import PropTypes from "prop-types";
  */
 export default function Section({ id, title, description, children }) {
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className="section">
+    <section id={id} aria-labelledby={`${id}-title`} className="section" role="region" tabIndex="-1">
       <div className="container">
         <header className="section-header">
           <h2 id={`${id}-title`} className="section-title">

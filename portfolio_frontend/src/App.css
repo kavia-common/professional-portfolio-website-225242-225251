@@ -125,10 +125,39 @@
   color: var(--secondary);
   text-decoration: none;
   font-weight: 500;
+  position: relative;
+  padding: 0.25rem 0;
 }
 .nav-links a:hover,
 .nav-links a:focus {
   color: var(--primary);
+}
+
+.nav-links a:focus-visible,
+.btn:focus-visible,
+.theme-toggle-btn:focus-visible,
+.skip-link:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--primary) 60%, white);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Active link state controlled by scroll spy */
+.nav-links a.active {
+  color: var(--primary);
+  font-weight: 700;
+}
+.nav-links a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 2px;
 }
 .theme-toggle-btn {
   border: 1px solid var(--border-color);
@@ -168,6 +197,7 @@
 .section {
   padding: var(--space-4xl) 0;
   background: var(--bg-primary);
+  scroll-margin-top: 80px; /* offset for sticky navbar when jumping to anchors */
 }
 .section:nth-of-type(even) {
   background: var(--bg-secondary);

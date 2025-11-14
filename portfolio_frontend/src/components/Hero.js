@@ -9,7 +9,7 @@ export default function Hero() {
   const { scrollToId } = useSmoothScroll({ offset: 72 });
 
   return (
-    <section id="hero" className="hero" aria-label="Introduction">
+    <section id="hero" className="hero" aria-label="Introduction" role="region">
       <div className="container hero-inner">
         <div className="hero-text">
           <h1 className="title">

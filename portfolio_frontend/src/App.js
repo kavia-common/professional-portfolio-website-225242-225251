@@ -20,7 +20,7 @@ function App() {
     <div className="App">
       <a href="#main" className="skip-link">Skip to content</a>
       <NavBar onToggleTheme={toggleTheme} currentTheme={theme} />
-      <main id="main" className="main">
+      <main id="main" className="main" role="main" tabIndex="-1">
         <Hero />
         <Projects />
         <Skills />

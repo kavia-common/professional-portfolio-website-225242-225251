@@ -50,7 +50,7 @@ export default function Contact() {
           <textarea id="message" name="message" rows={4} required placeholder="Tell me about your project..." />
         </div>
         <div className="form-actions">
-          <button className="btn btn-primary" type="submit">Send</button>
+          <button className="btn btn-primary" type="submit" aria-label="Send message">Send</button>
         </div>
         {status ? <div role="status" className="form-status">{status}</div> : null}
       </form>
