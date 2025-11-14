@@ -1,0 +1,30 @@
+[
+  {
+    "title": "Interactive Dashboard",
+    "description": "A responsive data visualization dashboard with real-time updates and accessible UI.",
+    "tags": ["React", "D3.js", "WebSockets"],
+    "links": {
+      "demo": "https://example.com/dashboard",
+      "repo": "https://github.com/you/interactive-dashboard"
+    },
+    "image": ""
+  },
+  {
+    "title": "API Service Boilerplate",
+    "description": "A production-ready Node.js REST API template with testing, CI, and Docker.",
+    "tags": ["Node.js", "Express", "Docker", "Jest"],
+    "links": {
+      "repo": "https://github.com/you/api-service-boilerplate"
+    }
+  },
+  {
+    "title": "Portfolio Website",
+    "description": "This portfolio SPA with a modern, clean design and easy-to-update content.",
+    "tags": ["React", "CSS", "Accessibility"],
+    "links": {
+      "demo": "https://example.com",
+      "repo": "https://github.com/you/portfolio"
+    },
+    "image": ""
+  }
+]
